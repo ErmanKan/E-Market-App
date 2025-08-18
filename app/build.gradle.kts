@@ -1,6 +1,8 @@
 plugins {
+    id("kotlin-kapt")
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -36,6 +38,11 @@ android {
     buildFeatures {
         viewBinding = true
     }
+    packaging {
+        resources {
+            resources.excludes.add("META-INF/*")
+        }
+    }
 }
 
 dependencies {
@@ -48,7 +55,31 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
+    implementation(libs.androidx.legacy.support.v4)
+    implementation(libs.androidx.fragment.ktx)
+    implementation(libs.firebase.appdistribution.gradle)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    // Retrofit
+    implementation(libs.retrofit)
+    implementation(libs.github.glide)
+    // Gson Converter
+    implementation(libs.converter.gson)
+    implementation(libs.gson)
+    //Hilt
+    implementation(libs.hilt.android) // Check for latest Hilt version
+    kapt(libs.hilt.compiler)
+
+    implementation(libs.androidx.room.runtime)
+    annotationProcessor(libs.androidx.room.compiler) // For Java projects
+
+    // To use Kotlin annotation processing tool (kapt) for Room
+    kapt(libs.androidx.room.compiler.v220rc01)
+
+    // Optional - Kotlin Extensions and Coroutines support for Room
+    implementation(libs.androidx.room.ktx)
+
+
+
 }
