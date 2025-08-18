@@ -1,5 +1,6 @@
 package com.ermanderici.casestudy.di
 
+import com.ermanderici.casestudy.data.ProductDao // <--- Add this import
 import com.ermanderici.casestudy.network.ApiService
 import com.ermanderici.casestudy.network.ProductRepository
 import com.ermanderici.casestudy.network.ProductRepositoryImpl
@@ -14,8 +15,12 @@ import javax.inject.Singleton
 object RepositoryModule {
 
     @Provides
-    @Singleton // Or @ActivityRetainedScoped for ViewModel lifecycle
-    fun provideProductRepository(apiService: ApiService): ProductRepository {
-        return ProductRepositoryImpl(apiService)
+    @Singleton
+    fun provideProductRepository(
+        apiService: ApiService,
+        productDao: ProductDao // <--- Add productDao as a parameter here
+    ): ProductRepository {
+        // Now Hilt can inject both apiService and productDao
+        return ProductRepositoryImpl(apiService, productDao)
     }
 }

@@ -3,11 +3,12 @@ package com.ermanderici.casestudy.model
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "products")
-data class ProductModel(
-    @PrimaryKey val id: String,
+@Entity(tableName = "cart_items")
+data class CartItemModel(
+    @PrimaryKey val productId: String,
     val name: String,
     val price: String,
     val image: String,
-    var isFavorite: Boolean = false
+    var quantity: Int = 1
+
 )
