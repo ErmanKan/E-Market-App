@@ -1,4 +1,4 @@
-# CaseStudy Android App
+# E-Market Android App
 
 ## Overview
 
