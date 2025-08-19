@@ -1,9 +1,12 @@
 package com.ermanderici.casestudy.di
 
-import com.ermanderici.casestudy.data.ProductDao // <--- Add this import
+import com.ermanderici.casestudy.data.CartDao
+import com.ermanderici.casestudy.data.ProductDao
+import com.ermanderici.casestudy.data.CartRepository
+import com.ermanderici.casestudy.data.CartRepositoryImpl
 import com.ermanderici.casestudy.network.ApiService
-import com.ermanderici.casestudy.network.ProductRepository
-import com.ermanderici.casestudy.network.ProductRepositoryImpl
+import com.ermanderici.casestudy.data.ProductRepository
+import com.ermanderici.casestudy.data.ProductRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,9 +21,14 @@ object RepositoryModule {
     @Singleton
     fun provideProductRepository(
         apiService: ApiService,
-        productDao: ProductDao // <--- Add productDao as a parameter here
+        productDao: ProductDao
     ): ProductRepository {
-        // Now Hilt can inject both apiService and productDao
         return ProductRepositoryImpl(apiService, productDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCartRepository(cartDao: CartDao): CartRepository {
+        return CartRepositoryImpl(cartDao)
     }
 }

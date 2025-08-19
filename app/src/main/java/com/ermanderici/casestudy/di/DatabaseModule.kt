@@ -2,8 +2,9 @@ package com.ermanderici.casestudy.di
 
 import android.content.Context
 import androidx.room.Room
-import com.ermanderici.casestudy.data.AppDatabase // Your AppDatabase class
-import com.ermanderici.casestudy.data.ProductDao // Your ProductDao interface
+import com.ermanderici.casestudy.data.AppDatabase
+import com.ermanderici.casestudy.data.CartDao // Import CartDao
+import com.ermanderici.casestudy.data.ProductDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,16 +22,19 @@ object DatabaseModule {
         return Room.databaseBuilder(
             context.applicationContext,
             AppDatabase::class.java,
-            "product_database" // Or your database name
+            "product_database"
         )
-            // Add any other configurations like .fallbackToDestructiveMigration() if needed
+            .fallbackToDestructiveMigration()
             .build()
     }
 
     @Provides
-    // No @Singleton needed here if AppDatabase is @Singleton,
-    // as Hilt will always provide the same AppDatabase instance.
     fun provideProductDao(appDatabase: AppDatabase): ProductDao {
-        return appDatabase.productDao() // Assumes AppDatabase has this method
+        return appDatabase.productDao()
+    }
+
+    @Provides
+    fun provideCartDao(appDatabase: AppDatabase): CartDao {
+        return appDatabase.cartDao()
     }
 }

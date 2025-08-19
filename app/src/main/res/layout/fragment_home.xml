@@ -15,7 +15,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <SearchView
+    <androidx.appcompat.widget.SearchView
         android:id="@+id/products_search_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -40,5 +40,18 @@
         app:layout_constraintTop_toTopOf="parent"
         app:spanCount="2"
         tools:listitem="@layout/item_product" />
+
+    <TextView
+        android:id="@+id/textViewEmptyOrError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/no_products_found"
+        android:textAppearance="?attr/textAppearanceSubtitle1"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:visibility="gone" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

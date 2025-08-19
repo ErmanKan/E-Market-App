@@ -1,30 +1,41 @@
-<?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@id/homeFragment">
 
     <fragment
-        android:id="@+id/navigation_home"
+        android:id="@+id/homeFragment"
         android:name="com.ermanderici.casestudy.ui.home.HomeFragment"
-        android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
-
+        android:label="@string/e_market"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_homeFragment_to_productDetailFragment"
+            app:destination="@id/productDetailFragment" />
+    </fragment>
     <fragment
-        android:id="@+id/navigation_cart"
+        android:id="@+id/favoritesFragment"
+        android:name="com.ermanderici.casestudy.ui.favorites.FavoritesFragment"
+        android:label="@string/e_market"
+        tools:layout="@layout/fragment_favorites">
+        <action
+            android:id="@+id/action_favoritesFragment_to_productDetailFragment"
+            app:destination="@id/productDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/cartFragment"
         android:name="com.ermanderici.casestudy.ui.cart.CartFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        android:label="@string/e_market"
+        tools:layout="@layout/fragment_cart">
+    </fragment>
+    <fragment
+        android:id="@+id/productDetailFragment"
+        android:name="com.ermanderici.casestudy.ui.productDetail.ProductDetailFragment"
+        android:label="@string/e_market"
+        tools:layout="@layout/fragment_product_detail">
+        <argument
+            android:name="productId"
+            app:argType="string" />
+    </fragment>
 
-    <fragment
-        android:id="@+id/navigation_favorites"
-        android:name="com.ermanderici.casestudy.ui.favorites.FavoritesFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_favorites" />
-    <fragment
-        android:id="@+id/navigation_profile"
-        android:name="com.ermanderici.casestudy.ui.favorites.FavoritesFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_profile" />
 </navigation>

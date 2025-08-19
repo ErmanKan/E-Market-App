@@ -15,7 +15,8 @@ import com.ermanderici.casestudy.model.ProductModel
 class ProductAdapter(
     private var products: List<ProductModel>,
     private val onFavoriteClick: (product: ProductModel, position: Int) -> Unit,
-    private val onAddToCartClick: (product: ProductModel) -> Unit
+    private val onAddToCartClick: (product: ProductModel) -> Unit,
+    private val onProductClick: (ProductModel) -> Unit
 ) :
     RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
 
@@ -28,6 +29,9 @@ class ProductAdapter(
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
         val product = products[position]
         holder.bind(product, position, onFavoriteClick, onAddToCartClick)
+        holder.itemView.setOnClickListener {
+            onProductClick(product)
+        }
     }
 
     override fun getItemCount(): Int = products.size
@@ -35,12 +39,6 @@ class ProductAdapter(
     fun updateProducts(newProducts: List<ProductModel>) {
         products = newProducts
         notifyDataSetChanged()
-    }
-
-    fun productChanged(position: Int) {
-        if (position >= 0 && position < products.size) {
-            notifyItemChanged(position)
-        }
     }
 
     class ProductViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -73,11 +71,9 @@ class ProductAdapter(
             productNameTextView.text = product.name
             productButton.setOnClickListener {
                 onAddToCartClick(product)
-                println("productButton clicked")
             }
             favoriteButton.setOnClickListener {
                 onFavoriteClick(product, position)
-                println("favoriteButton clicked")
             }
         }
     }

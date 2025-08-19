@@ -10,5 +10,4 @@ data class CartItemModel(
     val price: String,
     val image: String,
     var quantity: Int = 1
-
 )

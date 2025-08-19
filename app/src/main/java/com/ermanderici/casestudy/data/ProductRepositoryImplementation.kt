@@ -1,8 +1,8 @@
 // In ProductRepositoryImpl.kt
-package com.ermanderici.casestudy.network
+package com.ermanderici.casestudy.data
 
-import com.ermanderici.casestudy.data.ProductDao
 import com.ermanderici.casestudy.model.ProductModel
+import com.ermanderici.casestudy.network.ApiService
 import com.ermanderici.casestudy.util.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.catch // Added for getFavoriteProducts
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import javax.inject.Inject
@@ -37,6 +38,7 @@ class ProductRepositoryImpl @Inject constructor(
 
                     productDao.insertAll(productsToSave)
                 } ?: run {
+                    //assume it will always return positive
                 }
             } else {
                 emit(Resource.Error("Network Error: ${response.code()} ${response.message()}", productDao.getAllProducts().first()))
@@ -70,5 +72,28 @@ class ProductRepositoryImpl @Inject constructor(
                 Resource.Error("Failed to update favorite status in DB: ${e.localizedMessage}", exception = e)
             }
         }
+    }
+
+    override suspend fun getProductById(productId: String): Resource<ProductModel?> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val product = productDao.getProductById(productId)
+                Resource.Success(product)
+            } catch (e: Exception) {
+                Resource.Error("Failed to get product by ID from DB: ${e.localizedMessage}", data = null, exception = e)
+            }
+        }
+    }
+
+    // Added getFavoriteProducts method
+    override fun getFavoriteProducts(): Flow<Resource<List<ProductModel>>> {
+        return productDao.getFavoriteProducts()
+            .map<List<ProductModel>, Resource<List<ProductModel>>> { favorites ->
+                Resource.Success(favorites)
+            }
+            .catch { e ->
+                emit(Resource.Error("Failed to load favorites from database: ${e.localizedMessage}", emptyList()))
+            }
+            .flowOn(Dispatchers.IO)
     }
 }

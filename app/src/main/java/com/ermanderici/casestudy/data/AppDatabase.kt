@@ -4,12 +4,17 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.ermanderici.casestudy.model.CartItemModel
 import com.ermanderici.casestudy.model.ProductModel
 
-@Database(entities = [ProductModel::class], version = 1, exportSchema = false)
+@Database(
+    entities = [ProductModel::class, CartItemModel::class],
+    version = 3,
+    exportSchema = false
+)
 abstract class AppDatabase : RoomDatabase() {
-
     abstract fun productDao(): ProductDao
+    abstract fun cartDao(): CartDao
 
     companion object {
         @Volatile

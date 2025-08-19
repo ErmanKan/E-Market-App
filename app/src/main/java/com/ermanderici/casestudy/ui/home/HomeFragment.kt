@@ -5,13 +5,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
-import com.ermanderici.casestudy.databinding.FragmentHomeBinding // Assuming ViewBinding
+import com.ermanderici.casestudy.R
+import com.ermanderici.casestudy.databinding.FragmentHomeBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -20,7 +23,7 @@ import kotlinx.coroutines.launch
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
-    private val binding get() = _binding!! // Property delegate to ensure non-null
+    private val binding get() = _binding!!
 
     private val homeViewModel: HomeViewModel by viewModels()
     private lateinit var productAdapter: ProductAdapter
@@ -36,7 +39,29 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
+        setupSearchView()
         observeViewModel()
+        observeUiEvents()
+    }
+
+    private fun setupSearchView() {
+        binding.productsSearchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                homeViewModel.searchProducts(query.orEmpty())
+                binding.productsSearchView.clearFocus()
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                homeViewModel.searchProducts(newText.orEmpty())
+                return true
+            }
+        })
+
+        val currentQuery = homeViewModel.searchQuery.value
+        if (currentQuery.isNotEmpty()) {
+            binding.productsSearchView.setQuery(currentQuery, false)
+        }
     }
 
     private fun setupRecyclerView() {
@@ -47,12 +72,15 @@ class HomeFragment : Fragment() {
             },
             onAddToCartClick = { product ->
                 homeViewModel.addToCart(product)
+            },
+            onProductClick = { product ->
+                val action = HomeFragmentDirections.actionHomeFragmentToProductDetailFragment(product.id)
+                findNavController().navigate(action)
             }
         )
         binding.productsRecyclerView.apply {
             adapter = productAdapter
-            layoutManager = GridLayoutManager(requireContext(), 2) // Or your preferred layout
-            // Add ItemDecoration for spacing if needed
+            layoutManager = GridLayoutManager(requireContext(), 2)
         }
     }
 
@@ -60,22 +88,34 @@ class HomeFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 homeViewModel.productsUiState.collectLatest { uiState ->
-                    binding.progressBar.visibility = if (uiState.isLoading && uiState.products.isEmpty()) View.VISIBLE else View.GONE // Show progress only if loading initial empty list
+                    binding.progressBar.visibility = if (uiState.isLoading && uiState.products.isEmpty() && uiState.searchQuery.isEmpty()) View.VISIBLE else View.GONE
+                    productAdapter.updateProducts(uiState.products)
 
                     if (!uiState.isLoading && uiState.errorMessage != null) {
-                        Toast.makeText(context, uiState.errorMessage, Toast.LENGTH_LONG).show()
-
+                        binding.productsRecyclerView.visibility = View.GONE
+                        binding.textViewEmptyOrError.text = uiState.errorMessage
+                        binding.textViewEmptyOrError.visibility = View.VISIBLE
+                    } else if (!uiState.isLoading && uiState.products.isEmpty()) {
+                        binding.productsRecyclerView.visibility = View.GONE
+                        if (uiState.searchQuery.isNotBlank()) {
+                            binding.textViewEmptyOrError.text = getString(R.string.no_search_results_found)
+                        } else {
+                            binding.textViewEmptyOrError.text = getString(R.string.no_products_found)
+                        }
+                        binding.textViewEmptyOrError.visibility = View.VISIBLE
+                    } else if(!uiState.isLoading) {
+                        binding.textViewEmptyOrError.visibility = View.GONE
+                        binding.productsRecyclerView.visibility = View.VISIBLE
                     }
-
-                    productAdapter.updateProducts(uiState.products)
                 }
             }
         }
+    }
 
+    private fun observeUiEvents() {
         homeViewModel.productFavoriteUpdatedEvent.observe(viewLifecycleOwner) { product ->
             product?.let {
-
-                Toast.makeText(context, "${it.name} favorite: ${it.isFavorite}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "${it.name} favorite status: ${if(it.isFavorite) "Added" else "Removed"}", Toast.LENGTH_SHORT).show()
                 homeViewModel.onFavoriteEventHandled()
             }
         }
@@ -86,10 +126,18 @@ class HomeFragment : Fragment() {
                 homeViewModel.onCartMessageShown()
             }
         }
+
+        homeViewModel.toastMessage.observe(viewLifecycleOwner) { message ->
+            message?.let {
+                Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+                homeViewModel.onToastMessageShown()
+            }
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        binding.productsSearchView.setOnQueryTextListener(null)
         _binding = null
     }
 }
