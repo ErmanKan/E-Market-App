@@ -20,7 +20,23 @@ The application fetches product data from a repository (simulated or remote) and
 *   **Product Detail View:** (Assumed, as a typical feature) Navigate to a detailed view for each product.
 *   **State Management:** Utilizes `ViewModel` and Kotlin `StateFlow`/`LiveData` for robust UI state management.
 *   **Dependency Injection:** Uses Hilt for managing dependencies.
-*   **Asynchronous Operations:** LeverLeverages Kotlin Coroutines for background tasks and data fetching.
+*   **Asynchronous Operations:** Leverages Kotlin Coroutines for background tasks and data fetching.
+
+## Screenshots
+
+*(Screenshots are located in the `screenshots/` folder in the project root.)*
+
+**Example Screenshot 1: Product Listing**
+`![Product Listing](screenshots/Home_nofilter.png)`
+
+**Example Screenshot 2: Cart View**
+`![Filter Dialog](screenshots/Cart.png)`
+
+**Example Screenshot 3: Favorites View**
+`![Cart View](screenshots/Favorites.png)`
+
+**Example Screenshot 3: Filters Dialog View**
+`![Cart View](screenshots/Filters.png)`
 
 ## Environment Setup
 
@@ -28,7 +44,7 @@ To ensure compatibility and a smooth build process, the project was developed an
 
 *   **Android Studio:** `Android Studio Narwhal Feature Drop | 2025.1.2]`
 *   **Android Gradle Plugin Version:** `8.12.0`
-*   **Gradle Version:** `-8.13`
+*   **Gradle Version:** `8.13`
 *   **Kotlin Version:** `2.0.21`
 *   **Compile SDK Version:** `36`
 *   **Min SDK Version:** `24`
@@ -38,26 +54,27 @@ To ensure compatibility and a smooth build process, the project was developed an
 
 The project follows a standard Android project structure:
 
-*   **`casestudy/`**
-    *   **`data/`**: Contains data sources, repositories, and local/remote data handling logic.
-        *   `ProductRepository.kt`
-        *   `CartRepository.kt`
-        *   `model/`: Data model classes (e.g., `ProductModel.kt`).
-        *   `network/`: (If applicable) Network service interfaces and implementations.
-        *   `db/`: (If applicable) Room database definitions.
-    *   **`di/`**: Hilt dependency injection modules.
-    *   **`ui/`**: Contains UI-related classes (Activities, Fragments, ViewModels, Adapters).
-        *   `home/`: Features related to the home screen (product listing, search, filter).
-            *   `HomeFragment.kt`
-            *   `HomeViewModel.kt`
-            *   `ProductAdapter.kt`
-            *   `ProductFilterDialogFragment.kt`
-        *   `detail/`: (If applicable) Features related to the product detail screen.
-        *   `cart/`: (If applicable) Features related to the shopping cart.
-    *   **`util/`**: Utility classes and extension functions (e.g., `Resource.kt`).
-*   **`app/src/main/res/`**: Android resources.
-    *   `layout/`: XML layout files for UI screens and components.
-    *   `drawable/`: Vector drawables and other image assets.
-    *   `values/`: Strings, colors, styles, dimensions.
-    *   `navigation/`: Navigation graphs for Jetpack Navigation.
-    
+*   **`[your-project-root-folder-name]/`** (e.g., `CaseStudy/`)
+    *   **`app/src/main/java/com/ermanderici/casestudy/`** *(Assuming this is the main package path within `app`)*
+        *   **`data/`**: Contains data sources, repositories, and local/remote data handling logic.
+            *   `ProductRepository.kt`
+            *   `CartRepository.kt`
+            *   `model/`: Data model classes (e.g., `ProductModel.kt`).
+            *   `network/`: (If applicable) Network service interfaces and implementations.
+            *   `db/`: (If applicable) Room database definitions.
+        *   **`di/`**: Hilt dependency injection modules.
+        *   **`ui/`**: Contains UI-related classes (Activities, Fragments, ViewModels, Adapters).
+            *   `home/`: Features related to the home screen (product listing, search, filter).
+                *   `HomeFragment.kt`
+                *   `HomeViewModel.kt`
+                *   `ProductAdapter.kt`
+                *   `ProductFilterDialogFragment.kt`
+            *   `detail/`: (If applicable) Features related to the product detail screen.
+            *   `cart/`: (If applicable) Features related to the shopping cart.
+        *   **`util/`**: Utility classes and extension functions (e.g., `Resource.kt`).
+    *   **`app/src/main/res/`**: Android resources.
+        *   `layout/`: XML layout files for UI screens and components.
+        *   `drawable/`: Vector drawables and other image assets.
+        *   `values/`: Strings, colors, styles, dimensions.
+        *   `navigation/`: Navigation graphs for Jetpack Navigation.
+    *   **`screenshots/`**: Contains application screenshots.
