@@ -24,19 +24,12 @@ The application fetches product data from a repository (simulated or remote) and
 
 ## Screenshots
 
-*(Screenshots are located in the `screenshots/` folder in the project root.)*
+*(Screenshots are also located in the `screenshots/` folder in the project root.)*
 
-**Example Screenshot 1: Product Listing**
-`![Product Listing](screenshots/Home_nofilter.png)`
+| Product Listing | Cart View | Favorites View | Filters Dialog |
+|-----------------|-----------|----------------|----------------|
+| <img width="270" alt="Home_nofilter" src="https://github.com/user-attachments/assets/da83cbbf-5414-4309-b761-c27a21cc4539" /> | <img width="270" alt="Cart" src="https://github.com/user-attachments/assets/e3264f06-a7db-406d-b7d3-d720a854fc75" /> | <img width="270" alt="Favorites" src="https://github.com/user-attachments/assets/fa4cfb8e-29f5-4670-88ba-8c57f0093098" /> | <img width="270" alt="Filters" src="https://github.com/user-attachments/assets/6758b954-c137-407e-8982-30294b32821a" /> |
 
-**Example Screenshot 2: Cart View**
-`![Filter Dialog](screenshots/Cart.png)`
-
-**Example Screenshot 3: Favorites View**
-`![Cart View](screenshots/Favorites.png)`
-
-**Example Screenshot 3: Filters Dialog View**
-`![Cart View](screenshots/Filters.png)`
 
 ## Environment Setup
 
