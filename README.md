@@ -2,7 +2,7 @@
 
 ## Overview
 
-CaseStudy is an Android application designed to showcase a product listing with features such as searching, filtering, adding to cart, and marking products as favorites. It serves as a demonstration of modern Android development practices using Kotlin, Jetpack libraries, and Hilt for dependency injection.
+E-Marke is an Android application designed to showcase a product listing with features such as searching, filtering, adding to cart, and marking products as favorites. It serves as a demonstration of modern Android development practices using Kotlin, Jetpack libraries, and Hilt for dependency injection.
 
 The application fetches product data from a repository (simulated or remote) and displays it in a user-friendly interface. Users can interact with the product list by searching for specific items, applying filters based on brand and model, and managing their cart and favorite items.
 
@@ -47,8 +47,8 @@ To ensure compatibility and a smooth build process, the project was developed an
 
 The project follows a standard Android project structure:
 
-*   **`[your-project-root-folder-name]/`** (e.g., `CaseStudy/`)
-    *   **`app/src/main/java/com/ermanderici/casestudy/`** *(Assuming this is the main package path within `app`)*
+*   **`app/`**
+    *   **`/casestudy/`** *(Assuming this is the main package path within `app`)*
         *   **`data/`**: Contains data sources, repositories, and local/remote data handling logic.
             *   `ProductRepository.kt`
             *   `CartRepository.kt`
