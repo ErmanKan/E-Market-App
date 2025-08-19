@@ -15,10 +15,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- Filter Row -->
     <androidx.appcompat.widget.SearchView
         android:id="@+id/products_search_view"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:queryHint="@string/search_text"
         app:layout_constraintBottom_toTopOf="@+id/products_recycler_view"
         app:layout_constraintEnd_toEndOf="parent"
@@ -26,6 +27,41 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
+
+    <LinearLayout
+        android:id="@+id/filter_row_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="8dp"
+        app:layout_constraintEnd_toEndOf="@id/products_search_view"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@id/products_search_view"
+        app:layout_constraintTop_toBottomOf="@id/products_search_view">
+
+        <TextView
+            android:id="@+id/text_view_selected_filters"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:text=""
+            android:textAppearance="?attr/textAppearanceCaption" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_open_filter_dialog"
+            style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/set_filter"
+            app:icon="@drawable/ic_plus" /> <!-- Make sure you have this icon -->
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/products_recycler_view"
@@ -36,8 +72,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/filter_row_layout"
+        app:layout_constraintTop_toBottomOf="@+id/filter_row_layout"
         app:spanCount="2"
         tools:listitem="@layout/item_product" />
 

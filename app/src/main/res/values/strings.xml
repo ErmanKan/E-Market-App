@@ -21,4 +21,12 @@
     <string name="_0_00">$0.00</string>
     <string name="no_products_found">No products found</string>
     <string name="no_search_results_found">No result found</string>
+    <string name="set_filter">Set Filter</string>
+    <string name="no_filters_applied">No filters applied</string>
+    <string name="filter_button_text">Filter</string>
+    <string name="title_filter_products">Filter Products</string>
+    <string name="filter_by_brand">Filter by Brand</string>
+    <string name="filter_by_model">Filter by Model</string>
+    <string name="apply_filters">Apply</string>
+    <string name="clear_filters">Clear All</string>
 </resources>

@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), ProductFilterDialogFragment.FilterDialogListener { // Implement listener
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
@@ -40,6 +40,7 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
         setupSearchView()
+        setupFilterButton() // New setup
         observeViewModel()
         observeUiEvents()
     }
@@ -57,12 +58,32 @@ class HomeFragment : Fragment() {
                 return true
             }
         })
-
         val currentQuery = homeViewModel.searchQuery.value
         if (currentQuery.isNotEmpty()) {
             binding.productsSearchView.setQuery(currentQuery, false)
         }
     }
+
+    private fun setupFilterButton() {
+        binding.buttonOpenFilterDialog.setOnClickListener {
+            val currentState = homeViewModel.productsUiState.value
+            if (currentState.availableBrands.isNotEmpty() || currentState.availableModels.isNotEmpty()) {
+                val dialog = ProductFilterDialogFragment.newInstance(
+                    currentState.availableBrands,
+                    currentState.availableModels,
+                    currentState.selectedBrands,
+                    currentState.selectedModels
+                )
+                // Set target fragment if you need to pass data back that way,
+                // but implementing an interface on the fragment is often cleaner.
+                // dialog.setTargetFragment(this, FILTER_REQUEST_CODE) // Alternative
+                dialog.show(childFragmentManager, "ProductFilterDialog")
+            } else {
+                Toast.makeText(context, "Filter options not available yet.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
 
     private fun setupRecyclerView() {
         productAdapter = ProductAdapter(
@@ -88,8 +109,10 @@ class HomeFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 homeViewModel.productsUiState.collectLatest { uiState ->
-                    binding.progressBar.visibility = if (uiState.isLoading && uiState.products.isEmpty() && uiState.searchQuery.isEmpty()) View.VISIBLE else View.GONE
+                    binding.progressBar.visibility = if (uiState.isLoading && uiState.products.isEmpty() && uiState.searchQuery.isEmpty() && uiState.selectedBrands.isEmpty() && uiState.selectedModels.isEmpty()) View.VISIBLE else View.GONE
                     productAdapter.updateProducts(uiState.products)
+
+                    updateSelectedFiltersDisplay(uiState.selectedBrands, uiState.selectedModels)
 
                     if (!uiState.isLoading && uiState.errorMessage != null) {
                         binding.productsRecyclerView.visibility = View.GONE
@@ -97,11 +120,11 @@ class HomeFragment : Fragment() {
                         binding.textViewEmptyOrError.visibility = View.VISIBLE
                     } else if (!uiState.isLoading && uiState.products.isEmpty()) {
                         binding.productsRecyclerView.visibility = View.GONE
-                        if (uiState.searchQuery.isNotBlank()) {
-                            binding.textViewEmptyOrError.text = getString(R.string.no_search_results_found)
-                        } else {
-                            binding.textViewEmptyOrError.text = getString(R.string.no_products_found)
+                        var emptyText = getString(R.string.no_products_found)
+                        if (uiState.searchQuery.isNotBlank() || uiState.selectedBrands.isNotEmpty() || uiState.selectedModels.isNotEmpty()) {
+                            emptyText = getString(R.string.no_search_results_found)
                         }
+                        binding.textViewEmptyOrError.text = emptyText
                         binding.textViewEmptyOrError.visibility = View.VISIBLE
                     } else if(!uiState.isLoading) {
                         binding.textViewEmptyOrError.visibility = View.GONE
@@ -109,6 +132,22 @@ class HomeFragment : Fragment() {
                     }
                 }
             }
+        }
+    }
+
+    private fun updateSelectedFiltersDisplay(selectedBrands: Set<String>, selectedModels: Set<String>) {
+        val filtersText = mutableListOf<String>()
+        if (selectedBrands.isNotEmpty()) {
+            filtersText.add("Brands: ${selectedBrands.joinToString()}")
+        }
+        if (selectedModels.isNotEmpty()) {
+            filtersText.add("Models: ${selectedModels.joinToString()}")
+        }
+
+        if (filtersText.isEmpty()) {
+            binding.textViewSelectedFilters.text = getString(R.string.no_filters_applied)
+        } else {
+            binding.textViewSelectedFilters.text = filtersText.joinToString(" | ")
         }
     }
 
@@ -134,6 +173,13 @@ class HomeFragment : Fragment() {
             }
         }
     }
+
+    // Implementation of FilterDialogListener
+    override fun onFiltersApplied(selectedBrands: Set<String>, selectedModels: Set<String>) {
+        homeViewModel.setSelectedBrands(selectedBrands)
+        homeViewModel.setSelectedModels(selectedModels)
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
