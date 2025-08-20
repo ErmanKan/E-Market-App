@@ -6,7 +6,15 @@ import com.ermanderici.casestudy.data.CartRepository
 import com.ermanderici.casestudy.model.CartItemActions
 import com.ermanderici.casestudy.model.CartItemModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -34,7 +42,7 @@ class CartViewModel @Inject constructor(
     val totalPrice: StateFlow<Double> = cartItems.map { items ->
         items.sumOf { item ->
             try {
-                (item.price.replace(",", ".").toDoubleOrNull() ?: 0.0) * item.quantity
+                (item.price.replace(",", "").toDoubleOrNull() ?: 0.0) * item.quantity
             } catch (e: NumberFormatException) {
                 0.0
             }
@@ -43,6 +51,14 @@ class CartViewModel @Inject constructor(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000L),
         initialValue = 0.0
+    )
+
+    val totalCartItemCount: StateFlow<Int> = cartItems.map { items ->
+        items.sumOf { it.quantity }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000L),
+        initialValue = 0
     )
 
     override fun onQuantityIncrease(cartItem: CartItemModel) {
