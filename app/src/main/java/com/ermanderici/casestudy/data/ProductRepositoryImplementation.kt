@@ -1,4 +1,3 @@
-// In ProductRepositoryImpl.kt
 package com.ermanderici.casestudy.data
 
 import com.ermanderici.casestudy.model.ProductModel
@@ -85,7 +84,6 @@ class ProductRepositoryImpl @Inject constructor(
         }
     }
 
-    // Added getFavoriteProducts method
     override fun getFavoriteProducts(): Flow<Resource<List<ProductModel>>> {
         return productDao.getFavoriteProducts()
             .map<List<ProductModel>, Resource<List<ProductModel>>> { favorites ->

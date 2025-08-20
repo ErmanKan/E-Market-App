@@ -36,35 +36,31 @@ class HomeViewModel @Inject constructor(
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
-    // New StateFlows for selected filters
     private val _selectedBrands = MutableStateFlow<Set<String>>(emptySet())
-    val selectedBrands: StateFlow<Set<String>> = _selectedBrands.asStateFlow() // Expose if needed
+    val selectedBrands: StateFlow<Set<String>> = _selectedBrands.asStateFlow()
 
     private val _selectedModels = MutableStateFlow<Set<String>>(emptySet())
-    val selectedModels: StateFlow<Set<String>> = _selectedModels.asStateFlow() // Expose if needed
+    val selectedModels: StateFlow<Set<String>> = _selectedModels.asStateFlow()
 
 
-    private var searchJob: Job? = null // Keep for potential search debouncing if complex
     private var fetchJob: Job? = null
 
     val productsUiState: StateFlow<ProductUiState> =
         combine(
             _originalProductsResource,
             _searchQuery,
-            _selectedBrands, // Combine with selected brands
-            _selectedModels  // Combine with selected models
+            _selectedBrands,
+            _selectedModels
         ) { resource, query, currentSelectedBrands, currentSelectedModels ->
             val isLoading = resource is Resource.Loading
             val errorMessage = if (resource is Resource.Error) resource.message else null
 
-            // Get original data, showing stale data if loading or error
             val originalData = when (resource) {
                 is Resource.Success -> resource.data ?: emptyList()
                 is Resource.Error -> resource.data ?: emptyList()
                 is Resource.Loading -> resource.data ?: emptyList()
             }
 
-            // Derive available brands and models from the FULL original dataset
             val availableBrands = originalData.map { it.brand }.distinct().sorted().take(5)
             val availableModels = originalData.map { it.model }.distinct().sorted().take(5)
 
@@ -84,7 +80,6 @@ class HomeViewModel @Inject constructor(
                 }
             }
 
-            // 3. Filter by selected models
             val fullyFilteredProducts = if (currentSelectedModels.isEmpty()) {
                 brandFilteredProducts
             } else {
@@ -98,21 +93,20 @@ class HomeViewModel @Inject constructor(
                 isLoading = isLoading,
                 errorMessage = errorMessage,
                 searchQuery = query,
-                availableBrands = availableBrands, // Pass derived available brands
-                availableModels = availableModels, // Pass derived available models
+                availableBrands = availableBrands,
+                availableModels = availableModels,
                 selectedBrands = currentSelectedBrands,
                 selectedModels = currentSelectedModels,
-                isUserInitiatedRefresh = (resource is Resource.Loading && resource.data != null) // Example logic
+                isUserInitiatedRefresh = (resource is Resource.Loading && resource.data != null)
             )
         }
             .catch { e ->
-                // Ensure all fields of ProductUiState are considered in error emission
                 emit(ProductUiState(
                     errorMessage = "Flow processing error: ${e.localizedMessage}",
                     isLoading = false,
-                    products = emptyList(), // Provide empty list on error
-                    availableBrands = productsUiState.value.availableBrands, // Keep previous if available
-                    availableModels = productsUiState.value.availableModels, // Keep previous if available
+                    products = emptyList(),
+                    availableBrands = productsUiState.value.availableBrands,
+                    availableModels = productsUiState.value.availableModels,
                     selectedBrands = _selectedBrands.value,
                     selectedModels = _selectedModels.value,
                     searchQuery = _searchQuery.value
@@ -121,7 +115,7 @@ class HomeViewModel @Inject constructor(
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5000L),
-                initialValue = ProductUiState(isLoading = true) // Initial state
+                initialValue = ProductUiState(isLoading = true)
             )
 
     private val _productFavoriteUpdatedEvent = MutableLiveData<ProductModel?>()
@@ -140,10 +134,9 @@ class HomeViewModel @Inject constructor(
     fun fetchProducts(isRefresh: Boolean = false) {
         fetchJob?.cancel()
         fetchJob = viewModelScope.launch {
-            // Pass current data if it's a user-initiated refresh to avoid blank screen
+
             val currentDataForLoading = if (isRefresh) _originalProductsResource.value.data else null
             _originalProductsResource.value = Resource.Loading(currentDataForLoading)
-            // The isUserInitiatedRefresh flag in ProductUiState can be set based on this Resource.Loading state
 
             productRepository.getProducts()
                 .collect { resource ->
@@ -153,11 +146,9 @@ class HomeViewModel @Inject constructor(
     }
 
     fun searchProducts(query: String) {
-        // searchJob?.cancel() // Debouncing for search can be added here if needed
         _searchQuery.value = query
     }
 
-    // Functions to update selected filters from the Fragment/Dialog
     fun setSelectedBrands(brands: Set<String>) {
         _selectedBrands.value = brands
     }
@@ -173,8 +164,6 @@ class HomeViewModel @Inject constructor(
                 is Resource.Success -> {
                     val updatedProductFromRepo = resource.data
                     if (updatedProductFromRepo != null) {
-                        // Update the _originalProductsResource directly to reflect the change
-                        // The `combine` operator will then re-filter and update productsUiState.
                         if (_originalProductsResource.value is Resource.Success) {
                             val currentProducts = (_originalProductsResource.value as Resource.Success<List<ProductModel>>).data ?: emptyList()
                             val updatedList = currentProducts.map {
@@ -185,13 +174,13 @@ class HomeViewModel @Inject constructor(
                         _productFavoriteUpdatedEvent.postValue(updatedProductFromRepo)
                     } else {
                         _toastMessage.postValue("Favorite updated, but no data returned from repository.")
-                        fetchProducts() // Fallback: refresh all products
+                        fetchProducts()
                     }
                 }
                 is Resource.Error -> {
                     _toastMessage.postValue(resource.message ?: "Failed to update favorite status")
                 }
-                is Resource.Loading -> { /* UI can show a specific loading for this action if needed */ }
+                is Resource.Loading -> { }
             }
         }
     }

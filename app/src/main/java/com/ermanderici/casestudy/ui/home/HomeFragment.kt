@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class HomeFragment : Fragment(), ProductFilterDialogFragment.FilterDialogListener { // Implement listener
+class HomeFragment : Fragment(), ProductFilterDialogFragment.FilterDialogListener {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
@@ -40,7 +40,7 @@ class HomeFragment : Fragment(), ProductFilterDialogFragment.FilterDialogListene
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
         setupSearchView()
-        setupFilterButton() // New setup
+        setupFilterButton()
         observeViewModel()
         observeUiEvents()
     }
@@ -74,9 +74,6 @@ class HomeFragment : Fragment(), ProductFilterDialogFragment.FilterDialogListene
                     currentState.selectedBrands,
                     currentState.selectedModels
                 )
-                // Set target fragment if you need to pass data back that way,
-                // but implementing an interface on the fragment is often cleaner.
-                // dialog.setTargetFragment(this, FILTER_REQUEST_CODE) // Alternative
                 dialog.show(childFragmentManager, "ProductFilterDialog")
             } else {
                 Toast.makeText(context, "Filter options not available yet.", Toast.LENGTH_SHORT).show()
@@ -174,7 +171,6 @@ class HomeFragment : Fragment(), ProductFilterDialogFragment.FilterDialogListene
         }
     }
 
-    // Implementation of FilterDialogListener
     override fun onFiltersApplied(selectedBrands: Set<String>, selectedModels: Set<String>) {
         homeViewModel.setSelectedBrands(selectedBrands)
         homeViewModel.setSelectedModels(selectedModels)

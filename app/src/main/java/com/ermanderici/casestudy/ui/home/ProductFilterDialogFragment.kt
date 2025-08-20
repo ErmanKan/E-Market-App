@@ -19,13 +19,11 @@ class ProductFilterDialogFragment : DialogFragment() {
 
     private var listener: FilterDialogListener? = null
 
-    // Keep these as they are used to receive data and initialize selections
     private lateinit var availableBrands: Array<String>
     private lateinit var availableModels: Array<String>
     private lateinit var initiallySelectedBrandsBooleanArray: BooleanArray
     private lateinit var initiallySelectedModelsBooleanArray: BooleanArray
 
-    // Store CheckBox views to easily retrieve their state later
     private val brandCheckBoxes = mutableListOf<CheckBox>()
     private val modelCheckBoxes = mutableListOf<CheckBox>()
 
@@ -61,7 +59,6 @@ class ProductFilterDialogFragment : DialogFragment() {
             val selectedBrandsSet = it.getStringArray(ARG_SELECTED_BRANDS)?.toSet() ?: emptySet()
             val selectedModelsSet = it.getStringArray(ARG_SELECTED_MODELS)?.toSet() ?: emptySet()
 
-            // Initialize boolean arrays based on the passed-in selected sets
             initiallySelectedBrandsBooleanArray = availableBrands.map { brand -> selectedBrandsSet.contains(brand) }.toBooleanArray()
             initiallySelectedModelsBooleanArray = availableModels.map { model -> selectedModelsSet.contains(model) }.toBooleanArray()
         }
@@ -70,9 +67,6 @@ class ProductFilterDialogFragment : DialogFragment() {
             listener = parentFragment as FilterDialogListener
         } else if (activity is FilterDialogListener) {
             listener = activity as FilterDialogListener
-        } else {
-            // Consider throwing an exception if the listener is not implemented by host
-            // throw ClassCastException("$context must implement FilterDialogListener")
         }
     }
 
@@ -88,7 +82,6 @@ class ProductFilterDialogFragment : DialogFragment() {
         brandCheckBoxes.clear()
         modelCheckBoxes.clear()
 
-        // Populate Brand Checkboxes
         if (availableBrands.isNotEmpty()) {
             brandTitle.isVisible = true
             brandsContainer.isVisible = true
@@ -105,7 +98,6 @@ class ProductFilterDialogFragment : DialogFragment() {
             brandsContainer.isVisible = false
         }
 
-        // Populate Model Checkboxes
         if (availableModels.isNotEmpty()) {
             modelTitle.isVisible = true
             modelsContainer.isVisible = true
@@ -125,7 +117,7 @@ class ProductFilterDialogFragment : DialogFragment() {
 
         val builder = MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.title_filter_products)
-            .setView(dialogView) // Set the custom inflated view
+            .setView(dialogView)
             .setPositiveButton(R.string.apply_filters) { _, _ ->
                 val finalSelectedBrands = brandCheckBoxes
                     .filter { it.isChecked }
@@ -142,10 +134,6 @@ class ProductFilterDialogFragment : DialogFragment() {
             .setNegativeButton(android.R.string.cancel, null)
             .setNeutralButton(R.string.clear_filters) { _, _ ->
                 listener?.onFiltersApplied(emptySet(), emptySet())
-                // Optionally, uncheck all checkboxes in the UI here if dialog doesn't auto-dismiss
-                // brandCheckBoxes.forEach { it.isChecked = false }
-                // modelCheckBoxes.forEach { it.isChecked = false }
-                // dismiss() // Already happens by default for neutral button
             }
 
         return builder.create()

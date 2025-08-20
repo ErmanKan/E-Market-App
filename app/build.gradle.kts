@@ -62,6 +62,10 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.truth)
+    testImplementation(libs.kotlinx.coroutines.test)
     // Retrofit
     implementation(libs.retrofit)
     implementation(libs.github.glide)
@@ -69,11 +73,11 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.gson)
     //Hilt
-    implementation(libs.hilt.android) // Check for latest Hilt version
+    implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
 
     // Room
     implementation(libs.androidx.room.runtime)
     kapt(libs.androidx.room.compiler)
-    implementation(libs.androidx.room.ktx) // For coroutines support
+    implementation(libs.androidx.room.ktx)
 }
